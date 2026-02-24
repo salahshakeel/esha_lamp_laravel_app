@@ -50,7 +50,7 @@ class StudentClassController extends Controller
      */
     public function edit(StudentClass $studentClass)
     {
-        //
+        return response()->json($studentClass);
     }
 
     /**
@@ -58,7 +58,11 @@ class StudentClassController extends Controller
      */
     public function update(UpdateStudentClassRequest $request, StudentClass $studentClass)
     {
-        //
+        $studentClass->update($request->validated());
+        return response()->json([
+            'student_class' => $studentClass,
+            'message' => 'Student class updated successfully'
+        ]);
     }
 
     /**
@@ -66,6 +70,9 @@ class StudentClassController extends Controller
      */
     public function destroy(StudentClass $studentClass)
     {
-        //
+        $studentClass->delete();
+        return response()->json([
+            'message' => 'Student class deleted successfully'
+        ]);
     }
 }

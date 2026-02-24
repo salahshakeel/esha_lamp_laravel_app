@@ -11,7 +11,7 @@ class UpdateStudentClassRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateStudentClassRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255|unique:student_classes,name,' . $this->route('studentClass')->id,
+            'description' => 'required|string|max:255',
         ];
     }
 }
