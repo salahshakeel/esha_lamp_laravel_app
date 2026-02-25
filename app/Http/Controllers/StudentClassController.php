@@ -5,17 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\StudentClass;
 use App\Http\Requests\StoreStudentClassRequest;
 use App\Http\Requests\UpdateStudentClassRequest;
-
+use Illuminate\Http\Request;
 class StudentClassController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $studentClasses = StudentClass::all();
-        return response()->json($studentClasses);
-    }
+   public function index(Request $request)
+{
+    $search = $request->query('search');
+
+    $classes = StudentClass::when($search, function ($query) use ($search) {
+        $query->where('name', 'like', "%$search%");
+    })->paginate(2);
+
+    return response()->json($classes);
+}
 
     /**
      * Show the form for creating a new resource.
@@ -75,4 +80,6 @@ class StudentClassController extends Controller
             'message' => 'Student class deleted successfully'
         ]);
     }
+
+
 }
