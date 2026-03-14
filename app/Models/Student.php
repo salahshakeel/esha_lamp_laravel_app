@@ -7,19 +7,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
+    /** @use HasFactory<\Database\Factories\StudentFactory> */
     use HasFactory;
-
     protected $fillable = [
         'name',
-        'father_name',
-        'address',
         'email',
         'phone',
-        'class_id',
+        'address',
+        'class',
     ];
 
-    public function studentClass()
+      public function books()
     {
-        return $this->belongsTo(StudentClass::class, 'class_id');
+        return $this->belongsToMany(Book::class, 'book_student')
+                    ->withPivot('borrow_id');
     }
+
+    public function borrows()
+    {
+        return $this->hasMany(BookBorrow::class);
+    }
+
+
 }

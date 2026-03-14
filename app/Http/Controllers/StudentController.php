@@ -5,24 +5,51 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
-
+use Inertia\Inertia;
 class StudentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    private $students_classes = [
+        'Class 1',
+        'Class 2', 
+        'Class 3', 
+        'Class 4', 
+        'Class 5', 
+        'Class 6', 
+        'Class 7', 
+        'Class 8', 
+        'Class 9', 
+        'Class 10'
+    ];
+
     public function index()
     {
-        $students = Student::with('studentClass')->get();
-        return response()->json($students);
+        $students = Student::latest()->paginate(10);
+        return Inertia::render('Students/Index', [
+            'students' => $students
+        ]);
     }
-
+    public function BookIndex(Student $student)
+    {
+        return Inertia::render('Students/BooksIndex',[
+            'books' => $student->borrows()
+            ->with(['books', 'books.categories'])
+            ->latest()
+            ->paginate(10)
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+      
+        return Inertia::render('Students/Create', [
+            'students_classes' => $this->students_classes
+        ]);
     }
 
     /**
@@ -30,11 +57,8 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-        $student = Student::create($request->validated());
-        return response()->json([
-            'student' => $student,
-            'message' => 'Student created successfully'
-        ]);
+        Student::create($request->validated());
+        return redirect()->route('dashboard.students.index')->with('success', 'Student created successfully.');
     }
 
     /**
@@ -50,7 +74,10 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+        return Inertia::render('Students/Create', [
+            'students_classes' => $this->students_classes,
+            'student' => $student
+        ]);
     }
 
     /**
@@ -58,7 +85,8 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, Student $student)
     {
-        //
+        $student->update($request->validated());
+        return redirect()->route('dashboard.students.index')->with('success', 'Student updated successfully.');
     }
 
     /**
@@ -67,8 +95,6 @@ class StudentController extends Controller
     public function destroy(Student $student)
     {
         $student->delete();
-        return response()->json([
-            'message' => 'Student deleted successfully'
-        ]);
+        session()->flash('success', 'Student deleted successfully.');
     }
 }

@@ -11,7 +11,7 @@ class UpdateStudentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdateStudentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+                'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email,'.$this->student->id,
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:500',
+            'class' => 'required',
         ];
     }
 }
